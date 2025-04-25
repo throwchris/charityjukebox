@@ -10,10 +10,7 @@
 <script src="https://kit.fontawesome.com/d1a6249b79.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <style>
-     .active-button {
-      background-color: #4CAF50 !important;
-      color: white !important;
-    }
+ 
 
     .w3-allerta {
   font-family: "Allerta Stencil", Sans-serif;
@@ -63,14 +60,14 @@
         let currentButton = null;
 
       
-
-       function playSong(index) {
-  // Remove green from previous button
+function playSong(index) {
+  // Remove highlight from previous button
   if (currentButton) {
-    currentButton.classList.remove('active-button');
+    currentButton.classList.remove('w3-green');
+    currentButton.classList.add('w3-amber');
   }
 
-  stopCurrent(); // Just stops audio, doesn't mess with button classes
+  stopCurrent(); // Just stops audio
 
   const audio = document.getElementById(`audio${index}`);
   const button = document.getElementById(`btn${index}`);
@@ -78,10 +75,15 @@
     audio.play();
     currentlyPlaying = audio;
     currentButton = button;
-    button.classList.add('active-button'); // Adds green over amber
+
+    // Highlight new button
+    button.classList.remove('w3-amber');
+    button.classList.add('w3-green');
+
     document.getElementById("globalToggle").textContent = "Pause";
   }
 }
+
 
         function togglePlayPause() {
           if (currentlyPlaying) {
