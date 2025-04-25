@@ -116,7 +116,11 @@
   "Finished In The Father & Jesus",
   "Finished In The Holy Ghost & Rose",
   "Have Oil, Dear Woman",
-  "HE_LIVES_IN_ME"
+  "HE_LIVES_IN_ME",
+  "Heart of Charity",
+  "RED_LETTER-1",
+  "I Am Yielded",
+  "Jesus' Prayer For Us"
 ];
 
 for (let i = 0; i < songNames.length; i++) {
@@ -127,6 +131,22 @@ for (let i = 0; i < songNames.length; i++) {
       <audio id='audio${index}' src='audio/song${index}.mp3'></audio>
     </div>
   `);
+}
+
+for (let i = 1; i <= songNames.length; i++) {
+  const currentAudio = document.getElementById(`audio${i}`);
+  if (currentAudio) {
+    currentAudio.addEventListener('ended', () => {
+      const nextIndex = i + 1;
+      if (nextIndex <= songNames.length) {
+        playSong(nextIndex);
+      } else {
+        currentlyPlaying = null;
+        currentButton = null;
+        document.getElementById("globalToggle").textContent = "Play";
+      }
+    });
+  }
 }
 
 
