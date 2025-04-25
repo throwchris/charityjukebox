@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charity JukeBox</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&effect=fire">
+<script src="https://kit.fontawesome.com/d1a6249b79.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .active-button {
+      background-color: #2196F3 !important;
+    }
+
+    .w3-allerta {
+  font-family: "Allerta Stencil", Sans-serif;
+    }
+
+     /* Optional: Adding extra styling for a fixed navbar */
+     .w3-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000; /* Keeps navbar above other content */
+    }
+
+    body {
+      margin-top: 60px; /* Adjust according to navbar height */
+    }
+    
+  </style>
+</head>
+<body>
+   <div class="w3-container w3-top">
+    <nav class="w3-pink w3-padding">
+    <div class="w3-bar w3-padding w3-border w3-black">
+        <a href="#" class="w3-bar-item w3-button w3-text-red" onclick="togglePlayPause()" id="globalToggle">Pause</a>
+        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-text-red w3-hover-text-white" onclick="stopCurrent()">Stop</a>
+        <div>
+        <i class='fas fa-music w3-left w3-text-aqua' style='font-size:24px'></i>
+        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-white w3-center font-effect-fire">Charity JukeBox</a>
+        <i class='fas fa-music w3-text-aqua w3-text-aquas' style='font-size:24px'></i>
+        </div>  
+      </div>
+   
+</nav>
+
+</div>
+
+      
+      
+      
+  <div class="w3-container w3-padding-16 w3-center 3">
+    <div class="w3-row-padding w3-center">
+      <script>
+        let currentlyPlaying = null;
+        let currentButton = null;
+
+      
+
+        function playSong(index) {
+          stopCurrent();
+          const audio = document.getElementById(`audio${index}`);
+          const button = document.getElementById(`btn${index}`);
+          if (audio) {
+            audio.play();
+            currentlyPlaying = audio;
+            currentButton = button;
+            button.classList.add('active-button');
+            document.getElementById("globalToggle").textContent = "Pause";
+          }
+        }
+
+        function togglePlayPause() {
+          if (currentlyPlaying) {
+            if (currentlyPlaying.paused) {
+              currentlyPlaying.play();
+              document.getElementById("globalToggle").textContent = "Pause";
+            } else {
+              currentlyPlaying.pause();
+              document.getElementById("globalToggle").textContent = "Play";
+            }
+          }
+        }
+
+        function stopCurrent() {
+          if (currentlyPlaying) {
+            currentlyPlaying.pause();
+            currentlyPlaying.currentTime = 0;
+          }
+          if (currentButton) {
+            currentButton.classList.remove('active-button');
+          }
+          document.getElementById("globalToggle").textContent = "Play";
+        }
+
+        const songNames = [
+  "A Time For Peace Reggae",
+  "Boundless-hearts",
+  "Charity On The Phone. Boy's",
+  "Charity On The Phone. Girl's",
+  "Charity Shines",
+  "Charity-1",
+  "Charity-2",
+  "Charity's-embrace",
+  "Divine Love Not Left Alone",
+  "Embossed_In_Red",
+  "Endureth-The Oak In The Meadow_v.1",
+  "Envieth Not-Flight of Love",
+  "Extinguish The Fire",
+  "Finished In The Father & Jesus",
+  "Finished In The Holy Ghost & Rose",
+  "Have Oil, Dear Woman",
+  "HE_LIVES_IN_ME",
+  "Heart of Charity"
+];
+
+for (let i = 0; i < songNames.length; i++) {
+  const index = i + 1;
+  document.write(`
+    <div class='w3-col s12 m4 l3 w3-margin-bottom'>
+      <button class='w3-button w3-round w3-amber w3-block w3-border w3-hover-green' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
+      <audio id='audio${index}' src='audio/song${index}.mp3'></audio>
+    </div>
+  `);
+}
+
+
+      </script>
+    </div>
+  </div>
+</body>
+</html>
