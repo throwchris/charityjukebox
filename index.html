@@ -10,8 +10,9 @@
 <script src="https://kit.fontawesome.com/d1a6249b79.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <style>
-    .active-button {
-      background-color: #2196F3 !important;
+     .active-button {
+      background-color: #4CAF50 !important;
+      color: white !important;
     }
 
     .w3-allerta {
@@ -63,22 +64,24 @@
 
       
 
-        function playSong(index) {
-           if (currentButton) {
-            currentButton.classList.remove('active-button');
-            }
-          
-          stopCurrent();
-          const audio = document.getElementById(`audio${index}`);
-          const button = document.getElementById(`btn${index}`);
-          if (audio) {
-            audio.play();
-            currentlyPlaying = audio;
-            currentButton = button;
-            button.classList.add('active-button');
-            document.getElementById("globalToggle").textContent = "Pause";
-          }
-        }
+       function playSong(index) {
+  // Remove green from previous button
+  if (currentButton) {
+    currentButton.classList.remove('active-button');
+  }
+
+  stopCurrent(); // Just stops audio, doesn't mess with button classes
+
+  const audio = document.getElementById(`audio${index}`);
+  const button = document.getElementById(`btn${index}`);
+  if (audio) {
+    audio.play();
+    currentlyPlaying = audio;
+    currentButton = button;
+    button.classList.add('active-button'); // Adds green over amber
+    document.getElementById("globalToggle").textContent = "Pause";
+  }
+}
 
         function togglePlayPause() {
           if (currentlyPlaying) {
