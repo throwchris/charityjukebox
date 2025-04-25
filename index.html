@@ -127,7 +127,7 @@ for (let i = 0; i < songNames.length; i++) {
   const index = i + 1;
   document.write(`
     <div class='w3-col s12 m4 l3 w3-margin-bottom'>
-      <button class='w3-button w3-round w3-amber w3-block w3-border' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
+      <button class='w3-button w3-round w3-amber w3-block w3-hover-none' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
       <audio id='audio${index}' src='audio/song${index}.mp3'></audio>
     </div>
   `);
