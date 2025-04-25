@@ -64,6 +64,10 @@
       
 
         function playSong(index) {
+           if (currentButton) {
+            currentButton.classList.remove('active-button');
+            }
+          
           stopCurrent();
           const audio = document.getElementById(`audio${index}`);
           const button = document.getElementById(`btn${index}`);
