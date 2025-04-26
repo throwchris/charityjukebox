@@ -53,9 +53,9 @@
    
     <nav class="w3-padding w3-center w3-black w3-top">
    
-        <i class='fas fa-music w3-text-red font-effect-fire' style='font-size:32px'></i>
-        <a href="#" class="w3-bar-item w3-button w3-xlarge w3-center w3-text-pink ">Charity JukeBox</a>
-        <i class='fas fa-guitar w3-text-red font-effect-fire' style='font-size:32px'></i>
+      <i class='fas fa-music w3-text-red font-effect-fire' style='font-size:32px'></i>
+      <span class=" w3-hover-none w3-hover-text-pink w3-button w3-xlarge w3-center w3-text-pink ">Charity JukeBox</span>
+      <i class='fas fa-random  w3-text-red font-effect-fire' style='font-size:32px' onclick="event.preventDefault(); startShuffle()"></i>
         
         
    
@@ -68,6 +68,8 @@
       
   <div class="w3-container w3-padding-16 w3-center">
     <div class="w3-row-padding w3-center">
+      
+      
       <script>
         let currentlyPlaying = null;
         let currentButton = null;
@@ -192,6 +194,58 @@ for (let i = 1; i <= songNames.length; i++) {
     });
   }
 }
+
+let shuffleOrder = [];
+let shuffleIndex = 0;
+let isShuffling = false;
+
+function startShuffle() {
+  shuffleOrder = [];
+  for (let i = 1; i <= songNames.length; i++) {
+    shuffleOrder.push(i);
+  }
+  // Shuffle the array
+  shuffleOrder.sort(() => Math.random() - 0.5);
+  shuffleIndex = 0;
+  isShuffling = true;
+  playShuffleSong();
+}
+
+function playShuffleSong() {
+  if (shuffleIndex < shuffleOrder.length) {
+    const nextSong = shuffleOrder[shuffleIndex];
+    playSong(nextSong);
+    shuffleIndex++;
+  } else {
+    // Finished shuffle
+    isShuffling = false;
+    currentlyPlaying = null;
+    currentButton = null;
+    document.getElementById("globalToggle").textContent = "Play";
+  }
+}
+
+// Modify event listener to check for shuffle mode
+for (let i = 1; i <= songNames.length; i++) {
+  const currentAudio = document.getElementById(`audio${i}`);
+  if (currentAudio) {
+    currentAudio.addEventListener('ended', () => {
+      if (isShuffling) {
+        playShuffleSong();
+      } else {
+        const nextIndex = i + 1;
+        if (nextIndex <= songNames.length) {
+          playSong(nextIndex);
+        } else {
+          currentlyPlaying = null;
+          currentButton = null;
+          document.getElementById("globalToggle").textContent = "Play";
+        }
+      }
+    });
+  }
+}
+
 
 
       </script>
