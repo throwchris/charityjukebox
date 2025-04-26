@@ -151,8 +151,7 @@ function playSong(index) {
   "25. Mana_o_-l_o",
   "26. My-Brother",
   "27. O-Fire-Within-Me-Burn",
-  "28. The-Big-Parade"   
-          
+  "28. The-Big-Parade",
   
 
   
@@ -169,21 +168,7 @@ for (let i = 0; i < songNames.length; i++) {
   `);
 }
 
-for (let i = 1; i <= songNames.length; i++) {
-  const currentAudio = document.getElementById(`audio${i}`);
-  if (currentAudio) {
-    currentAudio.addEventListener('ended', () => {
-      const nextIndex = i + 1;
-      if (nextIndex <= songNames.length) {
-        playSong(nextIndex);
-      } else {
-        currentlyPlaying = null;
-        currentButton = null;
-        document.getElementById("globalToggle").textContent = "Play";
-      }
-    });
-  }
-}
+
 
 let shuffleOrder = [];
 let shuffleIndex = 0;
@@ -219,11 +204,11 @@ function playShuffleSong() {
 for (let i = 1; i <= songNames.length; i++) {
   const currentAudio = document.getElementById(`audio${i}`);
   if (currentAudio) {
-    currentAudio.addEventListener('ended', () => {
+    currentAudio.addEventListener('ended', function() {
       if (isShuffling) {
         playShuffleSong();
       } else {
-        const nextIndex = i + 1;
+        const nextIndex = parseInt(this.id.replace('audio', '')) + 1;
         if (nextIndex <= songNames.length) {
           playSong(nextIndex);
         } else {
@@ -235,6 +220,7 @@ for (let i = 1; i <= songNames.length; i++) {
     });
   }
 }
+
 
 
 
