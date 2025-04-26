@@ -160,7 +160,9 @@ function playSong(index) {
   "34. Trail-Boss-Bud",
   "35. We-Bare-All-Things-Scottish-Jig",
   "36. Fulfill",
-          
+
+
+
   
 
   
@@ -203,9 +205,14 @@ function playShuffleSong() {
   } else {
     // Finished shuffle
     isShuffling = false;
-    currentlyPlaying = null;
-    currentButton = null;
-    document.getElementById("globalToggle").textContent = "Play";
+    if (currentButton) {
+  currentButton.classList.remove('w3-green');
+  currentButton.classList.add('w3-amber');
+}
+currentlyPlaying = null;
+currentButton = null;
+document.getElementById("globalToggle").textContent = "Play";
+
   }
 }
 
@@ -221,9 +228,14 @@ for (let i = 1; i <= songNames.length; i++) {
         if (nextIndex <= songNames.length) {
           playSong(nextIndex);
         } else {
-          currentlyPlaying = null;
-          currentButton = null;
-          document.getElementById("globalToggle").textContent = "Play";
+          if (currentButton) {
+  currentButton.classList.remove('w3-green');
+  currentButton.classList.add('w3-amber');
+}
+currentlyPlaying = null;
+currentButton = null;
+document.getElementById("globalToggle").textContent = "Play";
+
         }
       }
     });
