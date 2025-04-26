@@ -28,8 +28,8 @@
     body {
       margin-top: 60px; /* Adjust according to navbar height */
     }
-
-      /* Fix for song buttons turning white on hover */
+    
+  /* Fix for song buttons turning white on hover */
   .w3-amber.w3-hover-none:hover {
     background-color: #ffc107 !important; /* Amber color */
     color: inherit !important;
@@ -43,23 +43,21 @@
     box-shadow: none !important;
     cursor: pointer;
   }
-    
+
+  body {
+  padding-bottom: 40px;
+}
   </style>
 </head>
 <body>
-   <div class="w3-container w3-top">
-    <nav class="w3-pink w3-padding">
-    <div class="w3-bar w3-padding w3-border w3-black">
-        <a href="#" class="w3-bar-item w3-button w3-text-red" onclick="togglePlayPause()" id="globalToggle">Pause</a>
-        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-text-red w3-hover-text-white" onclick="stopCurrent()">Stop</a>
-        <div>
-        <i class='fas fa-music w3-left w3-text-aqua' style='font-size:24px'></i>
-        <a href="#" class="w3-bar-item w3-button w3-right-align w3-hover-blue w3-hover-text-white w3-large w3-center font-effect-fire">Charity JukeBox</a>
-       
-       <a href="/charity/index.html"><i class='fas fa-book w3-text-aqua w3-text-red' style='font-size:24px'></i></a>
+   
+    <nav class="w3-padding w3-center w3-black w3-top">
+   
+        <i class='fas fa-music w3-text-red font-effect-fire' style='font-size:32px'></i>
+        <a href="#" class="w3-bar-item w3-button w3-xlarge w3-center w3-text-pink ">Charity JukeBox</a>
+        <i class='fas fa-guitar w3-text-red font-effect-fire' style='font-size:32px'></i>
         
-        </div>  
-      </div>
+        
    
 </nav>
 
@@ -68,7 +66,7 @@
       
       
       
-  <div class="w3-container w3-padding-16 w3-center 3">
+  <div class="w3-container w3-padding-16 w3-center">
     <div class="w3-row-padding w3-center">
       <script>
         let currentlyPlaying = null;
@@ -124,27 +122,49 @@ function playSong(index) {
         }
 
         const songNames = [
-  "A Time For Peace Reggae",
-  "Boundless-hearts",
-  "Charity On The Phone. Boy's",
-  "Charity On The Phone. Girl's",
-  "Charity Shines",
-  "Charity-1",
-  "Charity-2",
-  "Charity's-embrace",
-  "Divine Love Not Left Alone",
-  "Embossed_In_Red",
-  "Endureth-The Oak In The Meadow_v.1",
-  "Envieth Not-Flight of Love",
-  "Extinguish The Fire",
-  "Finished In The Father & Jesus",
-  "Finished In The Holy Ghost & Rose",
-  "Have Oil, Dear Woman",
-  "HE_LIVES_IN_ME",
-  "Heart of Charity",
-  "RED_LETTER-1",
-  "I Am Yielded",
-  "Jesus' Prayer For Us"
+  "1. A Time For Peace Reggae",
+  "2. Boundless-hearts",
+  "3. Charity On The Phone. Boy's",
+  "4. Charity On The Phone. Girl's",
+  "5. Charity Shines",
+  "6. Charity-1",
+  "7. Charity-2",
+  "8. Charity's-embrace",
+  "9. Divine Love Not Left Alone",
+  "10. Embossed_In_Red",
+  "11. Endureth-The Oak In The Meadow_v.1",
+  "12. Envieth Not-Flight of Love",
+  "13. Extinguish The Fire",
+  "14. Finished In The Father & Jesus",
+  "15. Finished In The Holy Ghost & Rose",
+  "16. Have Oil, Dear Woman",
+  "17. HE_LIVES_IN_ME",
+  "18. Heart of Charity",
+  "19. RED_LETTER-1",
+  "20. I Am Yielded",
+  "21. Jesus' Prayer For Us",
+  "22. JOHN_17",
+  "23. Little-Church",
+  "24. love-in-action",
+  "25.",
+  "26.",
+  "27.",
+  "28.",
+  "29.",
+  "30.",
+  "21.",
+  "32.",
+  "33.",
+  "34.",
+  "35.",
+  "36.",
+  "37.",
+  "38.",
+  "39.",
+  "40."
+
+  
+
 ];
 
 for (let i = 0; i < songNames.length; i++) {
@@ -177,5 +197,12 @@ for (let i = 1; i <= songNames.length; i++) {
       </script>
     </div>
   </div>
+
+  <footer class="w3-padding w3-center w3-black w3-bottom">  
+    
+    <a href="#" class="w3-bar-item w3-button w3-text-red w3-left-align" onclick="togglePlayPause()" id="globalToggle">Pause</a>
+    <a href="#" class="w3-bar-item w3-button w3-text-red w3-hover-text-white w3-left-align" onclick="stopCurrent()">Stop</a>
+    <a href="/charity/index.html" class='w3-text-pink w3-right-align w3-large'> Charity Definitions</a>
+  </footer>
 </body>
 </html>
