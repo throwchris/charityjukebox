@@ -34,7 +34,7 @@
     }
     
   /* Fix for song buttons turning white on hover */
-  .w3-amber.w3-hover-none:hover {
+  .w3-aqua.w3-hover-none:hover {
     background-color: #ffc107 !important; /* Amber color */
     color: inherit !important;
     box-shadow: none !important;
@@ -53,7 +53,7 @@
 }
   </style>
 </head>
-<body>
+<body class="w3-grey">
    
     <nav class="w3-padding w3-center w3-black w3-top">
    
@@ -83,7 +83,7 @@ function playSong(index) {
   // Remove highlight from previous button
   if (currentButton) {
     currentButton.classList.remove('w3-green');
-    currentButton.classList.add('w3-amber');
+    currentButton.classList.add('w3-aqua');
   }
 
   stopCurrent(); // Just stops audio
@@ -96,7 +96,7 @@ function playSong(index) {
     currentButton = button;
 
     // Highlight new button
-    button.classList.remove('w3-amber');
+    button.classList.remove('w3-aqua');
     button.classList.add('w3-green');
 
     document.getElementById("globalToggle").textContent = "Pause";
@@ -197,7 +197,7 @@ for (let i = 0; i < songNames.length; i++) {
   const index = i + 1;
   document.write(`
     <div class='w3-col s12 m4 l3 w3-margin-bottom'>
-      <button class='w3-button w3-round w3-amber w3-block w3-hover-none' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
+      <button class='w3-button w3-round w3-aqua w3-block w3-hover-none' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
       <audio id='audio${index}' src='audio/song${index}.mp3'></audio>
     </div>
   `);
