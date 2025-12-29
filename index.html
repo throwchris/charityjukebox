@@ -7,583 +7,809 @@
   <link rel="icon" href="jukebox.png" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&effect=fire">
-<script src="https://kit.fontawesome.com/d1a6249b79.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&effect=fire">
+  <script src="https://kit.fontawesome.com/d1a6249b79.js" crossorigin="anonymous"></script>
+
   <style>
+    /* ✅ Prevent horizontal overflow */
+    *, *::before, *::after { box-sizing: border-box; }
 
-#songImageModal {
-  scroll-behavior: smooth;
+    :root{
+      --bg0:#06070b;
+      --bg1:#0b1020;
+      --stroke: rgba(255,255,255,0.14);
+
+      --neonA:#ff2bd6;   /* pink */
+      --neonB:#06f3ff;   /* neon blue/aqua */
+      --txt:#e9f0ff;
+      --muted: rgba(233,240,255,0.68);
+
+      /* ✅ Background images (place next to index.html) */
+      --tileImg: url('purplerock.png');          /* song buttons */
+      --topImg:  url('blueredaquarock.png');     /* top bar */
+      --nowImg:  url('pinkcarmel.png');          /* now playing */
+      --dockImg: url('yellowrock.png');          /* controls */
+    }
+
+    html, body { height: 100%; }
+
+    body{
+      margin:0;
+      color: var(--txt);
+      background:
+        radial-gradient(1000px 500px at 10% 0%, rgba(255,43,214,0.18), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(6,243,255,0.16), transparent 55%),
+        radial-gradient(900px 700px at 50% 100%, rgba(124,77,255,0.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x: hidden;
+      width: 100vw;
+      padding-top: 78px;
+      padding-bottom: 160px;
+    }
+
+    /* electric haze */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(6,243,255,0.08), transparent 45%),
+        radial-gradient(circle at 70% 20%, rgba(255,43,214,0.07), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(255,210,50,0.06), transparent 55%);
+      filter: blur(24px);
+      animation: drift 14s ease-in-out infinite alternate;
+      z-index:-1;
+      pointer-events:none;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(-10px,-8px,0) scale(1.02); }
+      to{ transform: translate3d(12px,10px,0) scale(1.05); }
+    }
+
+    /* TOP BAR (image + glass) */
+    .topbar{
+      position:fixed; top:0; left:0; right:0;
+      z-index:1000;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--stroke);
+
+      background-image:
+        var(--topImg),
+        linear-gradient(180deg, rgba(0,0,0,0.75), rgba(0,0,0,0.30));
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner{
+      max-width: 1100px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items:center;
+      gap: 12px;
+    }
+    .topbar-left{ height: 1px; }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 6px;
+      user-select:none;
+      text-align:center;
+    }
+    .brand-row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+    }
+    .brand .title{
+      font-family:"Allerta Stencil", sans-serif;
+      letter-spacing: 0.8px;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--txt);
+      text-shadow:
+        0 0 10px rgba(255,43,214,0.55),
+        0 0 18px rgba(6,243,255,0.25),
+        0 0 28px rgba(255,170,0,0.12);
+    }
+    .badge{
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(6,243,255,0.35);
+      background: rgba(0,0,0,0.30);
+      color: rgba(233,240,255,0.92);
+      font-size: 12px;
+      box-shadow: inset 0 0 0 1px rgba(255,43,214,0.10);
+    }
+
+    .icon-btn{
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.25);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      justify-self: end;
+    }
+    .icon-btn:hover{
+      transform: translateY(-1px);
+      box-shadow:
+        0 0 0 2px rgba(255,43,214,0.18),
+        0 0 22px rgba(6,243,255,0.12),
+        0 14px 30px rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.30);
+    }
+    .icon-btn i{
+      font-size: 20px;
+      color: var(--neonA);
+      text-shadow: 0 0 14px rgba(255,43,214,0.55);
+    }
+
+    /* Shared “electric rim” */
+    .topbar, .nowbar, .dock-inner{ position: relative; }
+    .topbar::after, .nowbar::after, .dock-inner::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px rgba(6,243,255,0.18),
+        inset 0 0 24px rgba(255,43,214,0.12);
+    }
+
+    /* MAIN */
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 12px 10px;
+    }
+    .header-card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.40);
+    }
+    .header-card .sub{
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    /* SONG TILE (purple rock background) */
+    .song-tile{
+      border-radius: 18px !important;
+      border: 1px solid rgba(6,243,255,0.75) !important; /* neon blue outline */
+      color: var(--txt) !important;
+      text-align:left !important;
+      padding: 14px 14px !important;
+      line-height: 1.15 !important;
+      font-size: 14px !important;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      position: relative;
+      overflow:hidden;
+      min-height: 66px;
+
+      background-color: transparent !important;
+      background-image: var(--tileImg) !important;
+      background-size: 260% 260% !important;
+      background-position: var(--bx, 50%) var(--by, 50%) !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .song-tile::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.72));
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .song-tile::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(6,243,255,0.18), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(255,43,214,0.16), transparent 50%);
+      filter: blur(18px);
+      opacity: 0.55;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    .song-tile > span{
+      position:relative;
+      z-index:1;
+      display:block;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+    }
+
+    .song-tile:hover{
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 2px rgba(255,43,214,0.18),
+        0 0 26px rgba(255,43,214,0.14),
+        0 18px 45px rgba(0,0,0,0.50);
+      border-color: rgba(6,243,255,0.98) !important;
+    }
+
+    /* ✅ Keep song text white ALWAYS (W3.CSS hover override fix) */
+.song-tile,
+.song-tile:hover,
+.song-tile:focus,
+.song-tile:active{
+  color: #e9f0ff !important;
 }
 
- 
-
-    .w3-allerta {
-  font-family: "Allerta Stencil", Sans-serif;
-    }
-
-     /* Optional: Adding extra styling for a fixed navbar */
-     .w3-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000; /* Keeps navbar above other content */
-    }
-
-    body {
-      margin-top: 60px; /* Adjust according to navbar height */
-    }
-    
-  /* Fix for song buttons turning white on hover */
-  .w3-aqua.w3-hover-none:hover {
-    background-color: #07f3ff !important; /* Aqua color */
-    color: inherit !important;
-    box-shadow: none !important;
-    cursor: pointer;
-  }
-
-  .w3-green.w3-hover-none:hover {
-    background-color: #4CAF50 !important; /* Green color */
-    color: inherit !important;
-    box-shadow: none !important;
-    cursor: pointer;
-  }
-
-  body {
-  padding-bottom: 40px;
+.song-tile > span,
+.song-tile:hover > span,
+.song-tile:focus > span,
+.song-tile:active > span{
+  color: #e9f0ff !important;
 }
-   
-    
 
 
+    @keyframes neonPulse {
+      0% {
+        box-shadow:
+          0 0 0 2px rgba(6,243,255,0.28),
+          0 0 18px rgba(6,243,255,0.18),
+          0 0 12px rgba(255,43,214,0.12),
+          0 18px 55px rgba(0,0,0,0.52);
+      }
+      50% {
+        box-shadow:
+          0 0 0 2px rgba(6,243,255,0.44),
+          0 0 36px rgba(6,243,255,0.24),
+          0 0 26px rgba(255,43,214,0.20),
+          0 18px 65px rgba(0,0,0,0.58);
+      }
+      100% {
+        box-shadow:
+          0 0 0 2px rgba(6,243,255,0.28),
+          0 0 18px rgba(6,243,255,0.18),
+          0 0 12px rgba(255,43,214,0.12),
+          0 18px 55px rgba(0,0,0,0.52);
+      }
+    }
+    .playing{
+      border-color: rgba(6,243,255,0.98) !important;
+      animation: neonPulse 1.6s ease-in-out infinite;
+    }
+
+    /* DOCK stack (no scrollbar overflow) */
+    .dock{
+      position:fixed;
+      bottom: 10px;
+      left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 12px;
+      pointer-events:none;
+    }
+    .dock-stack{
+      width: min(1100px, calc(100vw - 24px));
+      margin: 0 auto;
+      pointer-events:auto;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+
+    /* NOW PLAYING (image + overlay) */
+    .nowbar{
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+      padding: 8px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      min-width: 0;
+      overflow: hidden;
+
+      background-image:
+        var(--nowImg),
+        linear-gradient(180deg, rgba(0,0,0,0.60), rgba(0,0,0,0.80));
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .now-left{
+      min-width: 0;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex: 1 1 auto;
+    }
+    .now-dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.12);
+      flex: 0 0 auto;
+    }
+    .now-dot.on{
+      background: rgba(46,255,164,0.22);
+      border-color: rgba(46,255,164,0.35);
+      box-shadow: 0 0 14px rgba(46,255,164,0.18);
+      animation: nowPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes nowPulse{
+      0%{ transform: scale(1); }
+      50%{ transform: scale(1.25); }
+      100%{ transform: scale(1); }
+    }
+    .now-meta{ min-width: 0; }
+    .now-title{
+      margin:0;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .now-sub{
+      margin:2px 0 0 0;
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .now-right{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+    .timechip{
+      font-size: 11px;
+      border: 1px solid rgba(6,243,255,0.25);
+      background: rgba(0,0,0,0.25);
+      padding: 5px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .seek{
+      width: min(180px, 28vw);
+      accent-color: var(--neonB);
+    }
+
+    /* CONTROLS (image + overlay) */
+    .dock-inner{
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 8px 10px;
+      gap: 10px;
+      min-width: 0;
+      overflow: hidden;
+
+      background-image:
+        var(--dockImg),
+        linear-gradient(180deg, rgba(0,0,0,0.60), rgba(0,0,0,0.82));
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .dock-left{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      flex-wrap:wrap;
+      min-width: 0;
+    }
+    .pill{
+      border-radius: 999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background: rgba(0,0,0,0.25) !important;
+      color: var(--txt) !important;
+      padding: 9px 12px !important;
+      font-size: 13px;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+    .pill:hover{
+      transform: translateY(-1px);
+      box-shadow:
+        0 0 0 2px rgba(255,43,214,0.12),
+        0 14px 30px rgba(0,0,0,0.35);
+      border-color: rgba(255,43,214,0.28) !important;
+    }
+    .pill.red{
+      color: var(--neonA) !important;
+      text-shadow: 0 0 12px rgba(255,43,214,0.35);
+    }
+    .dock a{
+      color: rgba(233,240,255,0.92);
+      text-decoration:none;
+      padding: 9px 10px;
+      font-size: 13px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.22);
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .dock a:hover{ box-shadow: 0 0 0 2px rgba(6,243,255,0.14); }
+
+    .w3-row-padding > .w3-col { padding-left: 10px; padding-right: 10px; }
+    /* Mobile-only time placement */
+.now-time-mobile{
+  display:none;
+  margin-left: 6px;
+  font-size: 11px;
+  color: rgba(233,240,255,0.75);
+}
+
+/* Desktop */
+@media (min-width: 601px){
+  #nowTimeMobile{ display:none; }
+}
+
+/* Mobile */
+@media (max-width: 600px){
+  .timechip{ display:none; }        /* hide right-side time */
+  .now-time-mobile{
+    display:inline;                 /* show inline with Playing text */
+  }
+}
+
+
+    @media (max-width: 600px){
+      .brand .title{ font-size: 20px; }
+      .badge{ font-size: 11px; }
+      .song-tile{ font-size: 13px !important; }
+      .timechip{ display:none; }
+      .seek{ width: 38vw; }
+    }
   </style>
 </head>
-<body class="w3-grey">
-   
-    <nav class="w3-padding w3-center w3-black w3-top">
-   
-      <i class='fas fa-music w3-text-red font-effect-fire' style='font-size:32px'></i>
-      <span class=" w3-hover-none w3-hover-text-pink w3-button w3-xlarge w3-center w3-text-pink ">Charity JukeBox</span>
-      <i class='fas fa-random  w3-text-red font-effect-fire' style='font-size:32px' onclick="event.preventDefault(); startShuffle()"></i>
-        
-        
-   
-</nav>
 
-</div>
-
-      
-      
-      
-  <div class="w3-container w3-padding-16 w3-center">
-    <div class="w3-row-padding w3-center">
-      
-      
-      <script>
-        let currentlyPlaying = null;
-        let currentButton = null;
-
-      
-        function playSong(index) {
-  // 🔹 If Share Mode is ON, share the song link instead of playing
-  if (shareMode) {
-    createShareLink(index);
-    toggleShareMode(); // turn Share off after one use
-    return;
-  }
-
-  // 🔹 Normal play logic
-  if (currentButton) {
-    currentButton.classList.remove('w3-green');
-    currentButton.classList.add('w3-aqua');
-  }
-
-  stopCurrent();
-
-  const audio = document.getElementById(`audio${index}`);
-  const button = document.getElementById(`btn${index}`);
-  if (audio) {
-    audio.play();
-    currentlyPlaying = audio;
-    currentButton = button;
-
-    button.classList.remove('w3-aqua');
-    button.classList.add('w3-green');
-
-    document.getElementById("globalToggle").textContent = "Pause";
-  }
-}
-
-
-
-
-        function togglePlayPause() {
-          if (currentlyPlaying) {
-            if (currentlyPlaying.paused) {
-              currentlyPlaying.play();
-              document.getElementById("globalToggle").textContent = "Pause";
-            } else {
-              currentlyPlaying.pause();
-              document.getElementById("globalToggle").textContent = "Play";
-            }
-          }
-        }
-
-        function stopCurrent() {
-  if (currentlyPlaying) {
-    currentlyPlaying.pause();
-    currentlyPlaying.currentTime = 0;
-  }
-  if (currentButton) {
-    currentButton.classList.remove('w3-green');
-    currentButton.classList.add('w3-aqua');
-  }
-  currentlyPlaying = null;
-  currentButton = null;
-  document.getElementById("globalToggle").textContent = "Play";
-
-  // Hide the modal when stopping
-  document.getElementById('songImageModal').style.display = 'none';
-}
-
-
-        const songNames = [
-        "1. A Time For Peace Reggae",
-  "2. Boundless-hearts",
-  "3. Charity On The Phone. Boy's",
-  "4. Charity On The Phone. Girl's",
-  "5. Charity Shines",
-  "6. Charity-1",
-  "7. Charity-2",
-  "8. Charity's-embrace",
-  "9. Divine Love Not Left Alone",
-  "10. Embossed_In_Red",
-  "11. Endureth-The Oak In The Meadow_v.1",
-  "12. Envieth Not-Flight of Love",
-  "13. Extinguish The Fire",
-  "14. Finished In The Father & Jesus",
-  "15. Finished In The Holy Ghost & Rose",
-  "16. Have Oil, Dear Woman",
-  "17. HE_LIVES_IN_ME",
-  "18. Heart of Charity",
-  "19. RED_LETTER-1",
-  "20. I Am Yielded",
-  "21. Jesus' Prayer For Us",
-  "22. JOHN_17",
-  "23. Little-Church",
-  "24. love-in-action",
-  "25. Mana_o_-l_o",
-  "26. My-Brother",
-  "27. O-Fire-Within-Me-Burn",
-  "28. The-Big-Parade",
-  "29. The-Kindness-of-Charity",
-  "30. The-Mother",
-  "31. The-Oak-in-the-Meadow-4",
-  "32. TheWaa",
-  "33. This-Man-Went-Home-Justified-1",
-  "34. Trail-Boss-Bud",
-  "35. We-Bare-All-Things-Scottish-Jig",
-  "36. Abba, Father My Love Cries Out to You",
-  "37. All of Christ (ballad)",
-  "38. All of Christ (upbeat)",
-  "39. At Charity Theatre Tonite",
-  "40. Ballad of Bud Batton",
-  "41. BLOOD_ON_THE_STONES",
-  "42. Charity Attributes_Man",
-  "43. Charity Wins-Final",
-  "44. I_Believe",
-  "45. Pure Waters",
-  "46. Red, Blood Red",
-  "47. Rose's Teachings 8",
-  "48. Satisified",
-  "49. Similes Song_Lady",
-  "50. Stand Strong Together",
-  "51. Tapestry of Charity 2",
-  "52. The-sure-hope-of-his-promises",
-  "53. the-wal-crew-maybe",
-  "54. You're My Everything_MAN",
-  "55. You're My Everything_WOMAN",
-  "56. Rock of Ages",
-  "57. Fulfill, Fulfill",
-  "58. Stick Together",
-  "59. It's Worth Everything",
-  "60. Victorious",
-  "61. Enduring Mercy",
-  "62. He Says It, It's True: Quick",
-  "63. He Says It, It's True: Ballad",
-  "64. He Says It, It's True: Comtemporary",
-  "65. He Says It, It's True: Pop",
-  "66. God Our Father",
-  "67. Break the Chains",
-  "68. By the Spirit We Are One",
-  "69. Our Hearts Did Burn",
-  "70. This is Our Time",
-  "71. The Father Cried",
-  "72. A Church for the Sons",
-  "73. Full of Light",
-  "74. All the Action",
-  "75. Garden Prayer",
-  "76. No Other Goal In Life",
-  "77. A Wise Builder",
-  "78. Na Halelu 23",
-  "79. Mist In The Valley Hawaiian",
-  "80. Mist In The Valley English",
-  "81. Kings And Priests",
-  "82. Holy Ghost 2",
-  "83. Beating satan",
-  "84. Charity In Motion",
-  "85. Bound In Love",
-  "86. All His Promises",
-  "87. Not Just Forgiven",
-  "88. Perfect Like The Father",
-  "89. Psalms 24",
-  "90. Sons Must Overcome",
-  "91. Thank You Jesus",
-  "92. Thanksgiving",
-  "93. The Word Song",
-  "94. We Are Daniels",
-  "95. Thank You Jesus 2",
-  "96. The Bride Has Come",
-  "97. The Word List",
-  "98. The Word With Action",
-  "99. His Hill Story",
-  "100. I Was Made For You",
-  "101. Out Of The Goodness Of Their Heart",
-  "102. Psalm 119",
-  "103. Never Enough For You",
-  "104. Who Hath Believed Our Report",
-  "105. A Woman Clothed With The Sun",
-  "106. All That I Have",
-  "107. Romans 8",
-  "108. Dancing With Jesus"
-  
-  
-  
-       
-       
-  
-
-
-
-  
-
-  
-
-];
-
-// Mapping of song indexes to their PNG image filenames (only for songs with images)
-const songImages = {
-  17: "hlim.png",
-  1: "song1.png",
-  2: "song2.png",
-  18:"budbatton.jpg",
-  // ... add all song image file names here, key = song index
-  // Example:
-  // 3: "charity_boys.png",
-  // 4: "charity_girls.png",
-  // 5: "charity_shines.png",
-  // ...
-};
-
-function showSongImageModal(index) {
-  const modal = document.getElementById('songImageModal');
-  const img = document.getElementById('modalSongImage');
-  const title = document.getElementById('modalSongTitle');
-
-  if (songImages[index]) {
-    img.src = songImages[index];
-    img.alt = songNames[index - 1];  // songNames is your array
-    title.textContent = songNames[index - 1];
-    modal.style.display = 'block';
-  } else {
-    // No image for this song, hide modal if open
-    modal.style.display = 'none';
-  }
-}
-
-function closeSongImageModal() {
-  const modal = document.getElementById('songImageModal');
-  modal.style.display = 'none';
-
-  // Stop the currently playing song and reset
-  if (currentlyPlaying) {
-    currentlyPlaying.pause();
-    currentlyPlaying.currentTime = 0;
-
-    if (currentButton) {
-      currentButton.classList.remove('w3-green');
-      currentButton.classList.add('w3-aqua');
-      currentButton = null;
-    }
-
-    currentlyPlaying = null;
-    document.getElementById("globalToggle").textContent = "Play";
-  }
-}
-
-for (let i = 0; i < songNames.length; i++) {
-  const index = i + 1;
-  document.write(`
-    <div class='w3-col s12 m4 l3 w3-margin-bottom'>
-      <button class='w3-button w3-round w3-aqua w3-block w3-hover-none' id='btn${index}' onclick='playSong(${index})'>${songNames[i]}</button>
-      <audio id='audio${index}' src='audio/song${index}.mp3'></audio>
-    </div>
-  `);
-}
-
-
-
-let shuffleOrder = [];
-let shuffleIndex = 0;
-let isShuffling = false;
-
-function startShuffle() {
-  shuffleOrder = [];
-  for (let i = 1; i <= songNames.length; i++) {
-    shuffleOrder.push(i);
-  }
-  // Shuffle the array
-  shuffleOrder.sort(() => Math.random() - 0.5);
-  shuffleIndex = 0;
-  isShuffling = true;
-  playShuffleSong();
-}
-
-function playShuffleSong() {
-  if (shuffleIndex < shuffleOrder.length) {
-    const nextSong = shuffleOrder[shuffleIndex];
-    playSong(nextSong);
-    shuffleIndex++;
-  } else {
-    // Finished shuffle
-    isShuffling = false;
-    if (currentButton) {
-  currentButton.classList.remove('w3-green');
-  currentButton.classList.add('w3-amber');
-}
-currentlyPlaying = null;
-currentButton = null;
-document.getElementById("globalToggle").textContent = "Play";
-
-  }
-}
-
-// Modify event listener to check for shuffle mode
-for (let i = 1; i <= songNames.length; i++) {
-  const currentAudio = document.getElementById(`audio${i}`);
-  if (currentAudio) {
-    currentAudio.addEventListener('ended', function() {
-      closeSongImageModal();  // hide modal when song ends
-
-      if (isShuffling) {
-        playShuffleSong();
-      } else {
-        const nextIndex = parseInt(this.id.replace('audio', '')) + 1;
-        if (nextIndex <= songNames.length) {
-          playSong(nextIndex);
-        } else {
-          if (currentButton) {
-            currentButton.classList.remove('w3-green');
-            currentButton.classList.add('w3-amber');
-          }
-          currentlyPlaying = null;
-          currentButton = null;
-          document.getElementById("globalToggle").textContent = "Play";
-        }
-      }
-    });
-  }
-}
-// Share mode flag
-let shareMode = false;
-
-// Toggle Share Mode
-function toggleShareMode() {
-  shareMode = !shareMode;
-  const btn = document.getElementById('shareToggle');
-
-  if (shareMode) {
-    btn.textContent = "Share: ON (click a song)";
-
-    // remove any old styles
-    btn.classList.remove("w3-amber");
-    btn.classList.remove("w3-text-aqua");
-
-    // force all red
-    btn.classList.add("w3-text-red");
-
-  } else {
-    btn.textContent = "Share";
-
-    // remove anything added
-    btn.classList.remove("w3-amber");
-    btn.classList.remove("w3-text-aqua");
-
-    // stay red
-    btn.classList.add("w3-text-red");
-  }
-}
-
-
-
-
-// Create share link and copy to clipboard
-function createShareLink(index) {
-  // Get full current URL
-  const full = window.location.href;
-
-  // Get folder URL (everything up to and including the last "/")
-  const lastSlash = full.lastIndexOf('/');
-  const folderUrl = full.substring(0, lastSlash + 1);
-
-  // Build single song URL
-  const shareUrl = `${folderUrl}song-pages/song${index}.html`;
-
-  // Get the song title from your songNames array (index is 1-based)
-  const songTitle = songNames[index - 1] || "Charity JukeBox song";
-
-  console.log("Share URL:", shareUrl);
-
-  // 🔹 1) Best case: use the native share sheet (mobile browsers)
-  if (navigator.share) {
-    navigator.share({
-      title: songTitle,
-      text: `Listen to this song from Charity JukeBox:\n${songTitle}`,
-      url: shareUrl
-    }).catch(err => {
-      // User cancelled or share not available; fall back to clipboard
-      console.log("Share cancelled or failed:", err);
-      fallbackShare(shareUrl);
-    });
-    return;
-  }
-
-  // 🔹 2) Fallback to clipboard / manual copy on devices without navigator.share
-  fallbackShare(shareUrl);
-}
-
-// Fallback: clipboard / prompt + optional navigation
-function fallbackShare(shareUrl) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        alert("Share link copied:\n" + shareUrl);
-        // If you still want to auto-open the page after copying, uncomment:
-        // window.location.href = shareUrl;
-      })
-      .catch(() => {
-        prompt("Copy this link:", shareUrl);
-        // window.location.href = shareUrl; // optional
-      });
-  } else {
-    prompt("Copy this link:", shareUrl);
-    // window.location.href = shareUrl; // optional
-  }
-}
-
-
-
-// Auto-play if URL contains ?song=##
-document.addEventListener("DOMContentLoaded", function () {
-  const params = new URLSearchParams(window.location.search);
-  const songParam = params.get("song");
-
-  if (songParam) {
-    const index = parseInt(songParam, 10);
-    if (!isNaN(index)) {
-      playSong(index);
-
-      const btn = document.getElementById(`btn${index}`);
-      if (btn) {
-        btn.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  }
-});
-
-
-
-
-
-
-
-
-
-
-      </script>
-    </div>
-  </div>
-
-  <footer class="w3-padding w3-center w3-black w3-bottom">  
-    <button class="w3-bar-item w3-button w3-text-red w3-left-align" 
-        onclick="toggleShareMode()" 
-        id="shareToggle">
-  Share
-</button>
-
-    
-    <button class="w3-bar-item w3-button w3-text-red w3-hover-none w3-hover-text-red w3-left-align" onclick="togglePlayPause()" id="globalToggle">Pause</button>
-    <button class="w3-bar-item w3-button w3-text-red w3-hover-none w3-hover-text-red w3-left-align" onclick="stopCurrent()">Stop</button>
-    <a href="/charity/index.html" class='w3-text-pink w3-right-align w3-large'> Charity Definitions</a>
-  </footer>
-  <!-- Generic modal for song images -->
-  <div id="songImageModal" class="w3-container" style="display:none; position:fixed; top:60px; bottom:60px; left:0; right:0; z-index:1001; overflow:auto;">
-    <div class="w3-card-4 w3-white w3-animate-opacity" style="max-width:600px; width:90%; margin:auto; margin-top:20px; margin-bottom:20px; position:relative;">
-      
-      <header class="w3-container w3-teal" style="position:relative;">
-        <button onclick="closeSongImageModal()" class="w3-button w3-teal" style="position:absolute; top:8px; right:8px;">&times;</button>
-        <h3 id="modalSongTitle" class="w3-center w3-margin-top w3-margin-bottom">Song Title</h3>
-      </header>
-  
-      <div class="w3-container" style="overflow:auto; max-height:calc(100vh - 180px);">
-        <img id="modalSongImage" src="" alt="" class="w3-image" style="width:100%; object-fit:contain;">
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left"></div>
+
+      <div class="brand">
+        <div class="brand-row">
+          <i class="fas fa-music font-effect-fire"
+             style="font-size:26px; color: var(--neonA); text-shadow:0 0 14px rgba(255,43,214,0.55)"></i>
+          <div class="title">Charity JukeBox</div>
+        </div>
+        <div class="badge">Electric • Modern • Glass</div>
       </div>
-  
+
+      <div class="icon-btn" title="Shuffle" onclick="event.preventDefault(); startShuffle()">
+        <i class="fas fa-random"></i>
+      </div>
     </div>
   </div>
-  
-  
+
+  <div class="wrap">
+    <div class="header-card">
+      <div class="w3-large" style="margin:0; font-family:'Allerta Stencil', sans-serif;">
+        Tap a track to play. Shuffle on the top right.
+      </div>
+      <div class="sub">Tip: Use Share to copy a single-song link.</div>
+    </div>
+
+    <div class="w3-row-padding w3-center" id="songGrid"></div>
+
+    <script>
+      let currentlyPlaying = null;
+      let currentButton = null;
+      let currentIndex = null;
+
+      // Now Playing DOM refs
+      let nowTitle, nowSub, nowTime, nowSeek, nowDot;
+
+      function fmtTime(sec){
+        if (!isFinite(sec)) return "0:00";
+        sec = Math.max(0, Math.floor(sec));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m}:${String(s).padStart(2,"0")}`;
+      }
+
+      function updateNowPlayingUI(){
+        if (!nowTitle) return;
+
+        if (!currentlyPlaying || currentIndex === null){
+          nowTitle.textContent = "Nothing playing";
+          nowSub.textContent = "Tap a track to start";
+          nowTime.textContent = "0:00 / 0:00";
+          nowSeek.value = 0;
+          nowSeek.disabled = true;
+          nowDot.classList.remove("on");
+          return;
+        }
+
+        const cur = fmtTime(currentlyPlaying.currentTime);
+        const dur = fmtTime(currentlyPlaying.duration);
+        nowTitle.textContent = songNames[currentIndex - 1] || `Song ${currentIndex}`;
+        nowSub.textContent = currentlyPlaying.paused ? "Paused" : "Playing";
+        nowTime.textContent = `${cur} / ${dur}`;
+        document.getElementById("nowTimeMobile").textContent = ` • ${cur} / ${dur}`;
+
+
+        if (isFinite(currentlyPlaying.duration) && currentlyPlaying.duration > 0){
+          const pct = (currentlyPlaying.currentTime / currentlyPlaying.duration) * 100;
+          nowSeek.value = String(pct);
+          nowSeek.disabled = false;
+        } else {
+          nowSeek.value = 0;
+          nowSeek.disabled = true;
+        }
+
+        if (!currentlyPlaying.paused) nowDot.classList.add("on");
+        else nowDot.classList.remove("on");
+      }
+
+      function attachAudioTimeUpdates(audio){
+        const tick = () => updateNowPlayingUI();
+        audio.addEventListener("timeupdate", tick);
+        audio.addEventListener("loadedmetadata", tick);
+        audio.addEventListener("play", tick);
+        audio.addEventListener("pause", tick);
+      }
+
+      // Share mode
+      let shareMode = false;
+
+      function toggleShareMode() {
+        shareMode = !shareMode;
+        const btn = document.getElementById('shareToggle');
+        btn.textContent = shareMode ? "Share: ON (tap a song)" : "Share";
+      }
+
+      function createShareLink(index) {
+        const full = window.location.href;
+        const lastSlash = full.lastIndexOf('/');
+        const folderUrl = full.substring(0, lastSlash + 1);
+        const shareUrl = `${folderUrl}song-pages/song${index}.html`;
+        const songTitle = songNames[index - 1] || "Charity JukeBox song";
+
+        if (navigator.share) {
+          navigator.share({ title: songTitle, text: `Listen:\n${songTitle}`, url: shareUrl })
+            .catch(() => fallbackShare(shareUrl));
+          return;
+        }
+        fallbackShare(shareUrl);
+      }
+
+      function fallbackShare(shareUrl) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl)
+            .then(() => alert("Share link copied:\n" + shareUrl))
+            .catch(() => prompt("Copy this link:", shareUrl));
+        } else {
+          prompt("Copy this link:", shareUrl);
+        }
+      }
+
+      function playSong(index) {
+        if (shareMode) {
+          createShareLink(index);
+          toggleShareMode();
+          return;
+        }
+
+        if (currentButton) currentButton.classList.remove('playing');
+        stopCurrent(false);
+
+        const audio = document.getElementById(`audio${index}`);
+        const button = document.getElementById(`btn${index}`);
+
+        if (audio) {
+          currentIndex = index;
+          audio.play();
+          currentlyPlaying = audio;
+          currentButton = button;
+
+          button.classList.add('playing');
+          document.getElementById("globalToggle").textContent = "Pause";
+
+          attachAudioTimeUpdates(audio);
+          updateNowPlayingUI();
+        }
+      }
+
+      function togglePlayPause() {
+        if (currentlyPlaying) {
+          if (currentlyPlaying.paused) {
+            currentlyPlaying.play();
+            document.getElementById("globalToggle").textContent = "Pause";
+          } else {
+            currentlyPlaying.pause();
+            document.getElementById("globalToggle").textContent = "Play";
+          }
+          updateNowPlayingUI();
+        }
+      }
+
+      function stopCurrent(resetUI = true) {
+        if (currentlyPlaying) {
+          currentlyPlaying.pause();
+          currentlyPlaying.currentTime = 0;
+        }
+        if (currentButton) currentButton.classList.remove('playing');
+
+        currentlyPlaying = null;
+        currentButton = null;
+        currentIndex = null;
+
+        document.getElementById("globalToggle").textContent = "Play";
+        if (resetUI) updateNowPlayingUI();
+      }
+
+      const songNames = [
+        "1. A Time For Peace Reggae","2. Boundless-hearts","3. Charity On The Phone. Boy's","4. Charity On The Phone. Girl's",
+        "5. Charity Shines","6. Charity-1","7. Charity-2","8. Charity's-embrace","9. Divine Love Not Left Alone","10. Embossed_In_Red",
+        "11. Endureth-The Oak In The Meadow_v.1","12. Envieth Not-Flight of Love","13. Extinguish The Fire","14. Finished In The Father & Jesus",
+        "15. Finished In The Holy Ghost & Rose","16. Have Oil, Dear Woman","17. HE_LIVES_IN_ME","18. Heart of Charity","19. RED_LETTER-1","20. I Am Yielded",
+        "21. Jesus' Prayer For Us","22. JOHN_17","23. Little-Church","24. love-in-action","25. Mana_o_-l_o","26. My-Brother","27. O-Fire-Within-Me-Burn",
+        "28. The-Big-Parade","29. The-Kindness-of-Charity","30. The-Mother","31. The-Oak-in-the-Meadow-4","32. TheWaa","33. This-Man-Went-Home-Justified-1",
+        "34. Trail-Boss-Bud","35. We-Bare-All-Things-Scottish-Jig","36. Abba, Father My Love Cries Out to You","37. All of Christ (ballad)",
+        "38. All of Christ (upbeat)","39. At Charity Theatre Tonite","40. Ballad of Bud Batton","41. BLOOD_ON_THE_STONES","42. Charity Attributes_Man",
+        "43. Charity Wins-Final","44. I_Believe","45. Pure Waters","46. Red, Blood Red","47. Rose's Teachings 8","48. Satisified",
+        "49. Similes Song_Lady","50. Stand Strong Together","51. Tapestry of Charity 2","52. The-sure-hope-of-his-promises","53. the-wal-crew-maybe",
+        "54. You're My Everything_MAN","55. You're My Everything_WOMAN","56. Rock of Ages","57. Fulfill, Fulfill","58. Stick Together","59. It's Worth Everything",
+        "60. Victorious","61. Enduring Mercy","62. He Says It, It's True: Quick","63. He Says It, It's True: Ballad","64. He Says It, It's True: Comtemporary",
+        "65. He Says It, It's True: Pop","66. God Our Father","67. Break the Chains","68. By the Spirit We Are One","69. Our Hearts Did Burn",
+        "70. This is Our Time","71. The Father Cried","72. A Church for the Sons","73. Full of Light","74. All the Action","75. Garden Prayer",
+        "76. No Other Goal In Life","77. A Wise Builder","78. Na Halelu 23","79. Mist In The Valley Hawaiian","80. Mist In The Valley English",
+        "81. Kings And Priests","82. Holy Ghost 2","83. Beating satan","84. Charity In Motion","85. Bound In Love","86. All His Promises",
+        "87. Not Just Forgiven","88. Perfect Like The Father","89. Psalms 24","90. Sons Must Overcome","91. Thank You Jesus","92. Thanksgiving",
+        "93. The Word Song","94. We Are Daniels","95. Thank You Jesus 2","96. The Bride Has Come","97. The Word List","98. The Word With Action",
+        "99. His Hill Story","100. I Was Made For You","101. Out Of The Goodness Of Their Heart","102. Psalm 119","103. Never Enough For You",
+        "104. Who Hath Believed Our Report","105. A Woman Clothed With The Sun","106. All That I Have","107. Romans 8","108. Dancing With Jesus"
+      ];
+
+      // Render grid with random crop per tile
+      const grid = document.getElementById("songGrid");
+      for (let i = 0; i < songNames.length; i++) {
+        const index = i + 1;
+        const bx = Math.floor(10 + Math.random() * 80);
+        const by = Math.floor(10 + Math.random() * 80);
+
+        const col = document.createElement("div");
+        col.className = "w3-col s12 m6 l4 w3-margin-bottom";
+        col.innerHTML = `
+          <button class="w3-button w3-block song-tile"
+                  id="btn${index}"
+                  style="--bx:${bx}%; --by:${by}%"
+                  onclick="playSong(${index})">
+            <span>${songNames[i]}</span>
+          </button>
+          <audio id="audio${index}" src="audio/song${index}.mp3"></audio>
+        `;
+        grid.appendChild(col);
+      }
+
+      // Shuffle
+      let shuffleOrder = [];
+      let shuffleIndex = 0;
+      let isShuffling = false;
+
+      function startShuffle() {
+        shuffleOrder = [];
+        for (let i = 1; i <= songNames.length; i++) shuffleOrder.push(i);
+        shuffleOrder.sort(() => Math.random() - 0.5);
+        shuffleIndex = 0;
+        isShuffling = true;
+        playShuffleSong();
+      }
+
+      function playShuffleSong() {
+        if (shuffleIndex < shuffleOrder.length) {
+          playSong(shuffleOrder[shuffleIndex]);
+          shuffleIndex++;
+        } else {
+          isShuffling = false;
+          stopCurrent(true);
+        }
+      }
+
+      // Ended listeners
+      for (let i = 1; i <= songNames.length; i++) {
+        const a = document.getElementById(`audio${i}`);
+        if (!a) continue;
+        a.addEventListener('ended', function () {
+          if (isShuffling) return playShuffleSong();
+          const next = i + 1;
+          if (next <= songNames.length) playSong(next);
+          else stopCurrent(true);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        nowTitle = document.getElementById("nowTitle");
+        nowSub   = document.getElementById("nowSub");
+        nowTime  = document.getElementById("nowTime");
+        nowSeek  = document.getElementById("nowSeek");
+        nowDot   = document.getElementById("nowDot");
+
+        nowSeek.addEventListener("input", function(){
+          if (!currentlyPlaying || !isFinite(currentlyPlaying.duration) || currentlyPlaying.duration <= 0) return;
+          const pct = parseFloat(this.value) / 100;
+          currentlyPlaying.currentTime = pct * currentlyPlaying.duration;
+          updateNowPlayingUI();
+        });
+
+        updateNowPlayingUI();
+      });
+    </script>
+  </div>
+
+  <!-- DOCK -->
+  <div class="dock">
+    <div class="dock-stack">
+
+      <div class="nowbar">
+        <div class="now-left">
+          <div id="nowDot" class="now-dot"></div>
+          <div class="now-meta">
+            <p class="now-title" id="nowTitle">Nothing playing</p>
+            <p class="now-sub">
+                <span id="nowSub">Tap a track to start</span>
+                <span id="nowTimeMobile" class="now-time-mobile"></span>
+              </p>
+              
+          </div>
+        </div>
+
+        <div class="now-right">
+          <span class="timechip" id="nowTime">0:00 / 0:00</span>
+          <input id="nowSeek" class="seek" type="range" min="0" max="100" value="0" step="0.1" disabled>
+        </div>
+      </div>
+
+      <div class="dock-inner">
+        <div class="dock-left">
+          <button class="w3-button pill red" onclick="toggleShareMode()" id="shareToggle">Share</button>
+          <button class="w3-button pill red" onclick="togglePlayPause()" id="globalToggle">Pause</button>
+          <button class="w3-button pill red" onclick="stopCurrent(true)">Stop</button>
+        </div>
+
+        <a href="/charity/index.html">Charity Definitions</a>
+      </div>
+
+    </div>
+  </div>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
