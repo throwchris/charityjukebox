@@ -597,6 +597,15 @@
     0 18px 45px rgba(0,0,0,0.45);
 }
 
+/* optional paused state styling */
+.ny-playbtn.paused{
+  opacity: 0.92;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.10),
+    0 0 14px rgba(6,243,255,0.10);
+}
+
+
 /* Firework particles */
 .ny-burst{
   position:absolute;
@@ -827,9 +836,10 @@
     <!-- ▶️ Click-to-play -->
     <button class="ny-btn ny-playbtn" id="nyPlayBtn" type="button">
       <i class="fas fa-music ny-musicicon"></i>
-      <span class="ny-clickme">CLICK ME</span>
-      <span class="ny-small">Play Celebration</span>
+      <span class="ny-clickme" id="nyPlayLabel">CLICK ME</span>
+      <span class="ny-small" id="nyPlaySub">Play Celebration</span>
     </button>
+    
   </div>
 </div>
 
@@ -846,7 +856,7 @@
              style="font-size:26px; color: var(--neonA); text-shadow:0 0 14px rgba(255,43,214,0.55)"></i>
           <div class="title">Charity JukeBox</div>
         </div>
-        <div class="badge">FAITH • HOPE • CHARITY</div>
+        <div class="badge">Faith • Hope • Charity</div>
       </div>
 
       <div class="icon-btn" title="Shuffle" onclick="event.preventDefault(); startShuffle()">
@@ -1266,27 +1276,67 @@
       }
     
       // ✅ Play button starts everything
-      playBtn.addEventListener("click", async () => {
-        if (started) return;
-        started = true;
-    
-        playBtn.querySelector(".ny-clickme").textContent = "PLAYING...";
-        playBtn.querySelector(".ny-small").textContent = "Enjoy the celebration";
-        playBtn.style.animation = "none";
-    
-        try{
-          music.currentTime = 0;
-          music.volume = 0.85;
-          await music.play();
-          startFireworks();
-          updateProgress();
-        }catch(e){
-          playBtn.querySelector(".ny-clickme").textContent = "CLICK ME";
-          playBtn.querySelector(".ny-small").textContent = "Audio blocked";
-          started = false;
-        }
-      });
-    
+      const playLabel = document.getElementById("nyPlayLabel");
+const playSub = document.getElementById("nyPlaySub");
+
+async function startShow(){
+  // start music (must be user gesture)
+  music.volume = 0.85;
+  await music.play();
+
+  // fireworks + progress
+  startFireworks();
+  if (!progressRAF) updateProgress();
+
+  playBtn.classList.remove("paused");
+  playLabel.textContent = "PAUSE";
+  playSub.textContent = "Tap to pause";
+}
+
+function pauseShow(){
+  music.pause();
+  stopFireworks();
+
+  playBtn.classList.add("paused");
+  playLabel.textContent = "PLAY";
+  playSub.textContent = "Tap to resume";
+}
+
+playBtn.addEventListener("click", async () => {
+  // If song ended earlier and user clicks again, restart
+  if (music.ended) {
+    music.currentTime = 0;
+  }
+
+  // Toggle behavior
+  if (!started){
+    started = true;
+    try{
+      music.currentTime = 0;
+      await startShow();
+    }catch(e){
+      // audio blocked for some reason
+      started = false;
+      playLabel.textContent = "CLICK ME";
+      playSub.textContent = "Audio blocked";
+    }
+    return;
+  }
+
+  // Already started: toggle play/pause
+  if (music.paused){
+    try{
+      await startShow();
+    }catch(e){
+      // If resume fails, just stay paused
+      playLabel.textContent = "PLAY";
+      playSub.textContent = "Tap to resume";
+    }
+  } else {
+    pauseShow();
+  }
+});
+
       // ❌ Skip button: close immediately
       skipBtn.addEventListener("click", closePopup);
     
@@ -1317,6 +1367,15 @@
         if (!already) openPopup();
       });
     })();
+
+    music.addEventListener("pause", () => {
+  // only pause fireworks if user paused (not when song ends)
+  if (!music.ended) stopFireworks();
+});
+music.addEventListener("play", () => {
+  if (started) startFireworks();
+});
+
     </script>
     
     
@@ -1324,4 +1383,3 @@
     
 </body>
 </html>
-
